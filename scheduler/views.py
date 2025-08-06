@@ -59,3 +59,24 @@ class CreateAppointmentView(APIView):
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+class AllAppointmentsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        appointments = Appointment.objects.filter(user_id=user).order_by('-created_at')
+        data = [{
+            "id": appointment.id,
+            "client_name": appointment.client_name,
+            "phone_number": appointment.phone_number,
+            "service": appointment.service,
+            "date": appointment.date,
+            "time": appointment.time,
+            "status": appointment.status,
+            "price": str(appointment.price),
+            "created_at": appointment.created_at,
+            "updated_at": appointment.updated_at
+        } for appointment in appointments]
+        
+        return Response(data, status=status.HTTP_200_OK)
