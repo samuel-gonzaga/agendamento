@@ -15,13 +15,16 @@ class CreateAppointmentView(APIView):
         try:
             client_name=data.get('client_name')
             phone_number=data.get('phone_number')
+            address=data.get('address', '')
+            email=data.get('email', '')
             service=data.get('service')
+            price=data.get('price')
             date=data.get('date')
             time=data.get('time')
+            payment_method=data.get('payment_method', '')
             status_appointment=data.get('status', 'pending')
-            price=data.get('price')
 
-            if not all([client_name, phone_number, service, date, time, status_appointment, price]):
+            if not all([client_name, phone_number, address, email, service, price, date, time, payment_method, status_appointment]):
                 return Response({"error": "Todos os campos são obrigatórios."}, status=status.HTTP_400_BAD_REQUEST)
             
             conflict = Appointment.objects.filter(
@@ -37,22 +40,28 @@ class CreateAppointmentView(APIView):
                 user_id=user,
                 client_name=client_name,
                 phone_number=phone_number,
+                address=address,
+                email=email,
                 service=service,
+                price=price,
                 date=date,
                 time=time,
+                payment_method=payment_method,
                 status=status_appointment,
-                price=price
             )
 
             return Response({
                 "id": appointment.id,
                 "client_name": appointment.client_name,
                 "phone_number": appointment.phone_number,
+                "address": appointment.address,
+                "email": appointment.email,
                 "service": appointment.service,
+                "price": str(appointment.price),
                 "date": appointment.date,
                 "time": appointment.time,
+                "payment_method": appointment.payment_method,
                 "status": appointment.status,
-                "price": str(appointment.price),
                 "created_at": appointment.created_at,
                 "updated_at": appointment.updated_at
             }, status=status.HTTP_201_CREATED)
@@ -70,11 +79,14 @@ class AllAppointmentsView(APIView):
             "id": appointment.id,
             "client_name": appointment.client_name,
             "phone_number": appointment.phone_number,
+            "address": appointment.address,
+            "email": appointment.email,
             "service": appointment.service,
+            "price": str(appointment.price),
             "date": appointment.date,
             "time": appointment.time,
+            "payment_method": appointment.payment_method,
             "status": appointment.status,
-            "price": str(appointment.price),
             "created_at": appointment.created_at,
             "updated_at": appointment.updated_at
         } for appointment in appointments]
@@ -93,11 +105,14 @@ class UpdateAppointmentView(APIView):
             
             appointment.client_name = data.get('client_name', appointment.client_name)
             appointment.phone_number = data.get('phone_number', appointment.phone_number)
+            appointment.address = data.get('address', appointment.address)
+            appointment.email = data.get('email', appointment.email)
             appointment.service = data.get('service', appointment.service)
+            appointment.price = data.get('price', appointment.price)
             appointment.date = data.get('date', appointment.date)
             appointment.time = data.get('time', appointment.time)
+            appointment.payment_method = data.get('payment_method', appointment.payment_method)
             appointment.status = data.get('status', appointment.status)
-            appointment.price = data.get('price', appointment.price)
 
             conflict = Appointment.objects.filter(
                 user_id=user, 
@@ -114,11 +129,14 @@ class UpdateAppointmentView(APIView):
                 "id": appointment.id,
                 "client_name": appointment.client_name,
                 "phone_number": appointment.phone_number,
+                "address": appointment.address,
+                "email": appointment.email,
                 "service": appointment.service,
+                "price": str(appointment.price),
                 "date": appointment.date,
                 "time": appointment.time,
+                "payment_method": appointment.payment_method,
                 "status": appointment.status,
-                "price": str(appointment.price),
                 "created_at": appointment.created_at,
                 "updated_at": appointment.updated_at
             }, status=status.HTTP_200_OK)
