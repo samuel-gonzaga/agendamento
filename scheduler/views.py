@@ -145,3 +145,19 @@ class UpdateAppointmentView(APIView):
             return Response({"error": "Agendamento não encontrado."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class DeleteAppointmentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, appointment_id):
+        user = request.user
+
+        try:
+            appointment = Appointment.objects.get(id=appointment_id, user_id=user)
+            appointment.delete()
+            return Response({"message": "Agendamento deletado com sucesso."}, status=status.HTTP_200_OK)
+
+        except Appointment.DoesNotExist:
+            return Response({"error": "Agendamento não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
