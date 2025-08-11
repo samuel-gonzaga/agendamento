@@ -28,7 +28,7 @@ class CreateAppointmentView(APIView):
                 return Response({"error": "Todos os campos são obrigatórios."}, status=status.HTTP_400_BAD_REQUEST)
             
             conflict = Appointment.objects.filter(
-                user_id=user, 
+                user=user, 
                 date=date, 
                 time=time
             ).exists()
@@ -37,7 +37,7 @@ class CreateAppointmentView(APIView):
                 return Response({"error": "Conflito de agendamento."}, status=status.HTTP_400_BAD_REQUEST)
 
             appointment = Appointment.objects.create(
-                user_id=user,
+                user=user,
                 client_name=client_name,
                 phone_number=phone_number,
                 address=address,
@@ -74,7 +74,7 @@ class AllAppointmentsView(APIView):
 
     def get(self, request):
         user = request.user
-        appointments = Appointment.objects.filter(user_id=user).order_by('-created_at')
+        appointments = Appointment.objects.filter(user=user).order_by('-created_at')
         data = [{
             "id": appointment.id,
             "client_name": appointment.client_name,
@@ -101,8 +101,8 @@ class UpdateAppointmentView(APIView):
         data = request.data
 
         try:
-            appointment = Appointment.objects.get(id=appointment_id, user_id=user)
-            
+            appointment = Appointment.objects.get(id=appointment_id, user=user)
+
             appointment.client_name = data.get('client_name', appointment.client_name)
             appointment.phone_number = data.get('phone_number', appointment.phone_number)
             appointment.address = data.get('address', appointment.address)
@@ -115,8 +115,8 @@ class UpdateAppointmentView(APIView):
             appointment.status = data.get('status', appointment.status)
 
             conflict = Appointment.objects.filter(
-                user_id=user, 
-                date=appointment.date, 
+                user=user,
+                date=appointment.date,
                 time=appointment.time
             ).exclude(id=appointment.id).exists()
 
@@ -153,7 +153,7 @@ class DeleteAppointmentView(APIView):
         user = request.user
 
         try:
-            appointment = Appointment.objects.get(id=appointment_id, user_id=user)
+            appointment = Appointment.objects.get(id=appointment_id, user=user)
             appointment.delete()
             return Response({"message": "Agendamento deletado com sucesso."}, status=status.HTTP_200_OK)
 

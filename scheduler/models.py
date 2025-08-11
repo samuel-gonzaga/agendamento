@@ -8,7 +8,7 @@ class Appointment(models.Model):
         ('canceled', 'Cancelado'),
     ]
 
-    user_id = models.ForeignKey('accounts.CustomUser', on_delete=models.CASCADE, related_name='appointments')
+    user = models.ForeignKey('accounts.CustomUser', on_delete=models.CASCADE, related_name='appointments')
     
     client_name = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=11, blank=True, null=True)
@@ -28,4 +28,4 @@ class Appointment(models.Model):
         return f"{self.service} com {self.client_name} em {self.date} às {self.time}"
 
     class Meta:
-        unique_together = ('user_id', 'date', 'time')
+        unique_together = ('user', 'date', 'time')
